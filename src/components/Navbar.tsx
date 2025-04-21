@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
   const toggleMenu = () => setIsOpen(!isOpen)
 
   return (
-    <nav className="bg-blue-800 text-white">
+    <nav className="bg-blue-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
@@ -24,10 +24,10 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Home</Link>
-              <Link to="/about" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">About</Link>
-              <Link to="/events" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Events</Link>
+            <div className="ml-10 flex items-baseline space-x-4 ">
+              <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white hover:text-bg-blue-700">Home</Link>
+              <Link to="/about" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white hover:text-bg-blue-700">About</Link>
+              <Link to="/events" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white hover:text-bg-blue-700">Events</Link>
               <DropdownMenu >
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
@@ -49,7 +49,28 @@ const Navbar: React.FC = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Link to="/charity-foundation" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Tau Sigma Charity Foundation</Link>
+              <DropdownMenu >
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-white-700">
+                    Collegiate Chapters <ChevronDown className="ml-1 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuItem>
+                    <Link to="/chapters/sigma-chapter" className="w-full">Sigma</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/chapters/eta-epsilon-chapter" className="w-full">Eta Epsilon</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/chapters/pi-kappa-chapter" className="w-full">Pi Kappa</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/chapters/epsilon-tau-chapter" className="w-full">Epsilon Tau</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Link to="/foundation" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white hover:text-bg-blue-700">Tau Sigma Charity Foundation</Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
@@ -65,7 +86,7 @@ const Navbar: React.FC = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Link to="/contact" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Contact</Link>
+              <Link to="/contact" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white hover:text-bg-blue-700">Contact</Link>
             </div>
           </div>
           <div className="md:hidden">

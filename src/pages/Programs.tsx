@@ -23,7 +23,7 @@ interface Program {
 const programs: Program[] = [
   {
     id: 1,
-    title: 'Leadership Development',
+    title: 'Bigger & Better Business',
     description: 'Learn essential leadership skills.',
     longDescription:
       'The Leadership Development program is designed to equip young leaders with the skills and knowledge they need to thrive in leadership roles. Our program offers workshops, seminars, and networking opportunities with established leaders.',
@@ -31,7 +31,7 @@ const programs: Program[] = [
   },
   {
     id: 2,
-    title: 'Community Outreach',
+    title: 'Education',
     description: 'Engage with the local community.',
     longDescription:
       'Our Community Outreach program focuses on giving back to the community through various volunteer initiatives. From organizing food drives to participating in local events, our members are always actively involved.',
@@ -39,7 +39,7 @@ const programs: Program[] = [
   },
   {
     id: 3,
-    title: 'Mentorship Program',
+    title: 'Social Action',
     description: 'Mentor and guide younger members.',
     longDescription:
       'The Mentorship Program connects experienced members with newer members to provide guidance, support, and advice. This program helps foster personal and professional growth within our fraternity.',
@@ -47,7 +47,7 @@ const programs: Program[] = [
   },
   {
     id: 4,
-    title: 'Educational Workshops',
+    title: 'Social Action',
     description: 'Workshops to boost academic and career growth.',
     longDescription:
       'Our Educational Workshops provide members with opportunities to develop both academically and professionally. Topics include career development, financial literacy, and more.',

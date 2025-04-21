@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar';
-import { Link } from 'lucide-react';
+// import { Link } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,15 +21,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <h3 className="text-lg font-semibold mb-4">Tau Sigma Fraternity</h3>
               <p className="text-sm">Empowering leaders since 1950</p>
             </div>
-            <div>
+            {/* <div>
               <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
-                <li><Link to="/about" className="text-sm hover:underline">About Us</Link></li>
+                <li><Link to="/about" className="text-white text-sm hover:underline">About Us</Link></li>
                 <li><Link to="/events" className="text-sm hover:underline">Events</Link></li>
                 <li><Link to="/members" className="text-sm hover:underline">Members</Link></li>
                 <li><Link to="/contact" className="text-sm hover:underline">Contact</Link></li>
               </ul>
-            </div>
+            </div> */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
               <div className="flex space-x-4">

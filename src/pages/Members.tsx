@@ -1,105 +1,104 @@
-import React, { useState } from 'react'
-import { Input } from "../components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select"
-import { Search } from 'lucide-react'
-import Layout from '@/components/Layout'
+import React, { useEffect, useState } from "react";
+// import { Input } from "../components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { Search } from "lucide-react";
+import Layout from "@/components/Layout";
+import { fetchGoogleSheetData } from "@/services/GoogleCalendarService";
+
+const SPREADSHEET_ID = "1w2vdy6iqDEADPSCiqLs0-9Fpa0Yey0ISB1UjBLs4jhY"; // Replace with your Google Sheet ID
+const API_KEY = "AIzaSyBRWo6DTySVqQANVSuyw5b9O2aP5VAajg8"; // Replace with your Google API key
+const RANGE = "Sheet1!A1:D60"; // Replace with the range in your Google Sheet
 
 interface Member {
-    id: number;
-    name: string;
-    role: string;
-    year: string;
-    image: string;
-  }
-  
-  const members: Member[] = [
-    { id: 1, name: "John Doe", role: "President", year: "Senior", image: "/placeholder.svg?height=100&width=100" },
-    { id: 2, name: "Jane Smith", role: "Vice President", year: "Junior", image: "/placeholder.svg?height=100&width=100" },
-    { id: 3, name: "Mike Johnson", role: "Treasurer", year: "Sophomore", image: "/placeholder.svg?height=100&width=100" },
-    { id: 4, name: "Emily Brown", role: "Secretary", year: "Junior", image: "/placeholder.svg?height=100&width=100" },
-    { id: 5, name: "Chris Lee", role: "Member", year: "Freshman", image: "/placeholder.svg?height=100&width=100" },
-    { id: 6, name: "Alex Wilson", role: "Member", year: "Senior", image: "/placeholder.svg?height=100&width=100" },
-    { id: 7, name: "Sam Taylor", role: "Member", year: "Sophomore", image: "/placeholder.svg?height=100&width=100" },
-    { id: 8, name: "Jordan Casey", role: "Member", year: "Junior", image: "/placeholder.svg?height=100&width=100" },
-  ];
-  
-  const Members: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState('')
-    const [roleFilter, setRoleFilter] = useState('')
-    const [yearFilter, setYearFilter] = useState('')
-  
-    const filteredMembers = members.filter(
-        (member) =>
-          member.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          (roleFilter === "all" || roleFilter === "" || member.role === roleFilter) && // Handle "all" or no filter
-          (yearFilter === "all" || yearFilter === "" || member.year === yearFilter)    // Handle "all" or no filter
-      );
-  
-    return (
-        <Layout>
+  id: number;
+  firstName: string;
+  lastName: string;
+  chapterRole: string;
+  stateRole: string;
+  image: string;
+}
 
+const Members: React.FC = () => {
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [roleFilter, setRoleFilter] = useState("");
+  // const [stateFilter, setStateFilter] = useState("");
+  const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
+
+  useEffect(() => {
+    
+
+    const getSheetData = async () => {
+        setLoading(true); // Set loading state to true when fetching starts
+    setError(null);
+    try {
+        const data = await fetchGoogleSheetData(SPREADSHEET_ID, RANGE, API_KEY);
+        console.log("data", data);
+        // Mapping Google Sheet data to Member array
+        const mappedMembers = data.map((row: string[], index: number) => ({
+          id: index + 1,
+          firstName: row[0],
+          lastName: row[1], // Assuming name is in the first column (A)
+          chapterRole: row[2], // Assuming role is in the second column (B)
+          stateRole: row[3], // Assuming year is in the third column (C)
+          image: row[4] || "/placeholder.svg?height=100&width=100", // Assuming image URL is in the fourth column (D)
+
+          
+        }));
+        
+        setMembers(mappedMembers);
+      }
+     catch (error) {
+      setError(error as string);
+    } finally {
+      setLoading(false);
+    }
+    };
+    getSheetData();
+  }, []);
+
+  return (
+    <Layout>
       <div className="min-h-screen bg-gray-100">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-8">Our Members</h1>
-          
-          <div className="mb-8 flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-grow">
-              <Input
-                type="text"
-                placeholder="Search members..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            </div>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="President">President</SelectItem>
-                <SelectItem value="Vice President">Vice President</SelectItem>
-                <SelectItem value="Treasurer">Treasurer</SelectItem>
-                <SelectItem value="Secretary">Secretary</SelectItem>
-                <SelectItem value="Member">Member</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={yearFilter} onValueChange={setYearFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Years</SelectItem>
-                <SelectItem value="Freshman">Freshman</SelectItem>
-                <SelectItem value="Sophomore">Sophomore</SelectItem>
-                <SelectItem value="Junior">Junior</SelectItem>
-                <SelectItem value="Senior">Senior</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-  
-          {filteredMembers.length === 0 ? (
-            <p className="text-center text-gray-600 mt-8">No members found matching the current filters.</p>
+
+          {/* Show loading indicator while fetching data */}
+          {loading && (
+            <p className="text-center text-gray-600">Loading members...</p>
+          )}
+
+          {/* Show error message if data fetching fails */}
+          {error && <p className="text-center text-red-600">{error}</p>}
+
+          {!loading && !error && members.length === 0 ? (
+            <p className="text-center text-gray-600 mt-8">
+              No members found matching the current filters.
+            </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filteredMembers.map(member => (
+              {members.map((member) => (
+                
                 <Card key={member.id}>
                   <CardHeader className="text-center">
-                    <img src={member.image} alt={member.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
-                    <CardTitle>{member.name}</CardTitle>
+                  <img src={member.image} alt={`${member.firstName} ${member.lastName}`} />
+                    <CardTitle>
+                      Bro. {member.firstName} {member.lastName}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
-                    <p className="text-sm text-gray-600">{member.role}</p>
-                    <p className="text-sm text-gray-600">{member.year}</p>
+                    <p className="text-sm text-gray-600">
+                      {member.chapterRole}
+                    </p>
+                    <p className="text-sm text-gray-600">{member.stateRole}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -107,10 +106,8 @@ interface Member {
           )}
         </main>
       </div>
-      </Layout>
+    </Layout>
+  );
+};
 
-    )
-  }
-  
-
-export default Members
+export default Members;

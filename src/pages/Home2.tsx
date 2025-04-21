@@ -57,11 +57,13 @@ const Home = () => {
         <section className="py-12 md:py-20">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4 md:text-5xl lg:text-6xl">
-              Welcome to Tau Sigma Fraternity
+              Birmingham Sigmas
+            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4 md:text-2xl lg:text-2xl">
+              Tau Sigma Chapter of Phi Beta Sigma Fraternity, Inc.
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Empowering leaders, fostering brotherhood, and serving our
-              community since 1950.
+              Servicing the Metro Birmingham and Jefferson County area since 1924.
             </p>
             <div className="flex justify-center space-x-4">
               <Button asChild>
@@ -137,7 +139,7 @@ const Home = () => {
               </CardContent>
               <CardFooter>
                 <Button variant="link" asChild>
-                  <Link to="/charity-foundation">Learn More</Link>
+                  <Link to="/charity-foundation">Tau Sigma Charity Foundation</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -147,33 +149,24 @@ const Home = () => {
         {/* Featured Event Section */}
         <section className="py-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Featured Event
+            Featured Links
           </h2>
-          {events.length > 0 ? (
-            <ScrollArea>
+          <ScrollArea>
 
             <ul>
-              {events.map((event, index) => (
-                <li key={index}>
+                <li>
                   <Card>
                     <CardContent className="p-0">
                       <div className="md:flex">
-                        <div className="md:w-1/2">
-                          <img
-                            src="/placeholder.svg?height=300&width=400"
-                            alt="Annual Charity Gala"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
                         <div className="p-6 md:w-1/2">
                           <CardTitle className="text-2xl mb-2">
-                            {event.summary}
+                            title
                           </CardTitle>
                           <CardDescription className="mb-4">
-                            {new Date(event.start).toLocaleString()}
+                            detail
                           </CardDescription>
                           <p className="text-gray-600 mb-4">
-                            {event.description}
+                            dec
                           </p>
                           <Button asChild>
                             <Link to="/events">Learn More</Link>
@@ -183,13 +176,11 @@ const Home = () => {
                     </CardContent>
                   </Card>
                 </li>
-              ))}
             </ul>
             </ScrollArea>
 
-          ) : (
-            <p>No upcoming events found.</p>
-          )}
+
+          
         </section>
 
         {/* Testimonial Section */}
