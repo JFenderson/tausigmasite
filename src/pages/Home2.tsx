@@ -15,8 +15,8 @@ import { Link } from "react-router-dom";
 import { fetchUpcomingEvents } from "../services/GoogleCalendarService";
 
 // const CLIENT_ID = '416426082232-31vh92aiq8959gdu909vmceg2je4u1i7.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyBRWo6DTySVqQANVSuyw5b9O2aP5VAajg8';
-const SPECIFIC_CALENDAR_ID = "9c569e94d47ed3c539e4ab0adcf2db05f927c5a220316c93d3aca61dee9a4636@group.calendar.google.com";
+const API_KEY = process.env.API_KEY;
+const SPECIFIC_CALENDAR_ID = process.env.SPECIFIC_CALENDAR_ID ;
 
 const Home = () => {
   const [events, setEvents] = useState<any[]>([]);

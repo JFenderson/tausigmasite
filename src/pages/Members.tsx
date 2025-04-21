@@ -12,9 +12,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/Layout";
 import { fetchGoogleSheetData } from "@/services/GoogleCalendarService";
 
-const SPREADSHEET_ID = "1w2vdy6iqDEADPSCiqLs0-9Fpa0Yey0ISB1UjBLs4jhY"; // Replace with your Google Sheet ID
-const API_KEY = "AIzaSyBRWo6DTySVqQANVSuyw5b9O2aP5VAajg8"; // Replace with your Google API key
-const RANGE = "Sheet1!A1:D60"; // Replace with the range in your Google Sheet
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID; // Replace with your Google Sheet ID
+const API_KEY = process.env.API_KEY; // Replace with your Google API key
+const RANGE = process.env.TAU_SIGMA_CHAPTER_RANGE; // Replace with the range in your Google Sheet
 
 interface Member {
   id: number;

@@ -8,9 +8,9 @@ import { fetchGoogleSheetData } from "@/services/GoogleCalendarService";
 import SocialMediaLinks from "../SocialMediaLinks";
 import PresidentSection from "../PresidentSection";
 
-const SPREADSHEET_ID = "1w2vdy6iqDEADPSCiqLs0-9Fpa0Yey0ISB1UjBLs4jhY"; // Replace with your Google Sheet ID
-const API_KEY = "AIzaSyBRWo6DTySVqQANVSuyw5b9O2aP5VAajg8"; // Replace with your Google API key
-const RANGE = "SigmaChapter!A1:D60"; // Replace with the range in your Google Sheet
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID; // Replace with your Google Sheet ID
+const API_KEY = process.env.API_KEY; // Replace with your Google API key
+const RANGE = process.env.SIGMA_CHAPTER_RANGE; // Replace with the range in your Google Sheet
 
 interface Member {
   id: number;

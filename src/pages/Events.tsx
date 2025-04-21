@@ -72,9 +72,8 @@ const Events: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const calendarId = "josephfenderson@gmail.com"; // Replace with your calendar ID
-  const apiKey = "AIzaSyBRWo6DTySVqQANVSuyw5b9O2aP5VAajg8"; // Replace with your API key
-  const clientId =
-    "416426082232-31vh92aiq8959gdu909vmceg2je4u1i7.apps.googleusercontent.com";
+  const apiKey = process.env.API_KEY; // Replace with your API key
+  const clientId = process.env.CLIENT_ID;
 
   useEffect(() => {
     const loadEvents = async () => {
