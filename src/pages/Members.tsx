@@ -1,69 +1,115 @@
-import React, { useEffect, useState } from "react";
-// import { Input } from "../components/ui/input";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
-// import { Search } from "lucide-react";
 import Layout from "@/components/Layout";
-import { fetchGoogleSheetData } from "@/services/GoogleCalendarService";
+import TS100 from '../assets/TS100.svg';
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 
-const SPREADSHEET_ID = process.env.SPREADSHEET_ID; // Replace with your Google Sheet ID
-const API_KEY = process.env.API_KEY; // Replace with your Google API key
-const RANGE = process.env.TAU_SIGMA_CHAPTER_RANGE; // Replace with the range in your Google Sheet
 
+const dynamoDb = new DynamoDBClient({
+  region: 'us-east-1',
+  credentials: {
+    // accessKeyId: import.meta.env.VITE_AWS_DYNAMO_ACCESS_KEY_ID, 
+    // secretAccessKey: import.meta.env.VITE_AWS_DYNAMO_SECRET_ACCESS_KEY_ID,
+    accessKeyId: import.meta.env.VITE_AWS_S3_ACCESS_KEY_ID, 
+    secretAccessKey: import.meta.env.VITE_AWS_S3_SECRET_ACCESS_KEY,
+  },
+});
+
+console.log()
 interface Member {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
+  chapter: string;
   chapterRole: string;
   stateRole: string;
-  image: string;
+  imageUrl: string;
 }
 
-const Members: React.FC = () => {
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [roleFilter, setRoleFilter] = useState("");
-  // const [stateFilter, setStateFilter] = useState("");
+const Members = () => {
   const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchMembers = async () => {
+      const params = {
+        TableName: 'Members',
+        KeyConditionExpression: 'chapter = :chapter',
+        ExpressionAttributeValues: {
+          ':chapter': { S: 'Tau Sigma' },
+        },
+      };
+
+      try {
+        const command = new QueryCommand(params); // Scan the DynamoDB table
+        const data = await dynamoDb.send(command);
+        // Map the DynamoDB data to the Member type
+        const mappedMembers: Member[] = data.Items?.map((item) => ({
+          id: item.id?.S || "unknown_id", // Use optional chaining and fallback value
+          firstName: item.firstName?.S || 'No first name',
+          lastName: item.lastName?.S || 'No last name',
+          chapter: item.chapter?.S || 'No chapter',
+          chapterRole: item.chapterRole?.S || '',
+          stateRole: item.stateRole?.S || '',
+          imageUrl: item.imageUrl?.S || TS100, // Default image if missing
+        })) || [];
+
+        const chapterRolesPriority = [
+          "President", "Vice President", "Secretary", "Treasurer", "Financial Secretary", "Director of Social Action", "Director of Bigger & Better Business", "Director of Education", "Sigma Beta Club Cooridinator", "Sigma-Zeta Relations (Hoover)", "Sigma-Zeta Relations(Bessemer)","Sigma-Zeta Relations (Birmingham)", "House Manager","CEO of Tau Sigma Charity Foundation",
+          "Immediate Past AL State Director", "AL Director of Military Affairs", "AL Director of Collegiate Affairs", "AL Sigma Beta Club Coordinator" // Add other roles as needed
+        ];
+
+        const getRolePriority = (role: string) => {
+          return chapterRolesPriority.indexOf(role) !== -1 ? chapterRolesPriority.indexOf(role) : Infinity;
+        };
+
+        const sortedMembers = mappedMembers
+          .filter((member) => member.chapter === 'Tau Sigma')  // Filter members by chapter (only Tau Sigma)
+          .sort((a, b) => {
+            // Compare chapterRole first (priority-based)
+            const chapterRoleA = a.chapterRole ? getRolePriority(a.chapterRole) : Infinity;
+            const chapterRoleB = b.chapterRole ? getRolePriority(b.chapterRole) : Infinity;
+
+            // If chapterRole is the same, compare stateRole next
+            if (chapterRoleA === chapterRoleB) {
+              const stateRoleA = a.stateRole ? getRolePriority(a.stateRole) : Infinity;
+              const stateRoleB = b.stateRole ? getRolePriority(b.stateRole) : Infinity;
+
+              // If stateRole is also the same, sort alphabetically by last name and first name
+              if (stateRoleA === stateRoleB) {
+                const lastNameA = a.lastName.toLowerCase();
+                const lastNameB = b.lastName.toLowerCase();
+                const firstNameA = a.firstName.toLowerCase();
+                const firstNameB = b.firstName.toLowerCase();
+
+                if (lastNameA === lastNameB) {
+                  return firstNameA.localeCompare(firstNameB); // Alphabetical sorting by first name
+                }
+                return lastNameA.localeCompare(lastNameB); // Alphabetical sorting by last name
+              }
+
+              return stateRoleA - stateRoleB; // If stateRole is different, prioritize stateRole
+            }
+
+            return chapterRoleA - chapterRoleB; // Prioritize chapterRole
+          });
+
+
+        console.log('Data retrieved from DynamoDB:', sortedMembers);
     
-
-    const getSheetData = async () => {
-        setLoading(true); // Set loading state to true when fetching starts
-    setError(null);
-    try {
-        const data = await fetchGoogleSheetData(SPREADSHEET_ID, RANGE, API_KEY);
-        console.log("data", data);
-        // Mapping Google Sheet data to Member array
-        const mappedMembers = data.map((row: string[], index: number) => ({
-          id: index + 1,
-          firstName: row[0],
-          lastName: row[1], // Assuming name is in the first column (A)
-          chapterRole: row[2], // Assuming role is in the second column (B)
-          stateRole: row[3], // Assuming year is in the third column (C)
-          image: row[4] || "/placeholder.svg?height=100&width=100", // Assuming image URL is in the fourth column (D)
-
-          
-        }));
-        
-        setMembers(mappedMembers);
+        setMembers(sortedMembers); 
+        setLoading(false);
+      } catch (err) {
+        setError('Error fetching members');
+        console.error(err);
+        setLoading(false);
       }
-     catch (error) {
-      setError(error as string);
-    } finally {
-      setLoading(false);
-    }
     };
-    getSheetData();
+
+    fetchMembers(); // Run fetch function on component mount
   }, []);
+
 
   return (
     <Layout>
@@ -85,22 +131,24 @@ const Members: React.FC = () => {
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {members.map((member) => (
-                
-                <Card key={member.id}>
-                  <CardHeader className="text-center">
-                  <img src={member.image} alt={`${member.firstName} ${member.lastName}`} />
-                    <CardTitle>
-                      Bro. {member.firstName} {member.lastName}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-sm text-gray-600">
-                      {member.chapterRole}
-                    </p>
-                    <p className="text-sm text-gray-600">{member.stateRole}</p>
-                  </CardContent>
-                </Card>
+                     {members.map((member) => (
+              <Card key={member.id}>
+                <CardHeader className="text-center">
+                  {/* Display the image with fallback */}
+                  <CardTitle>
+                    Bro. {member.firstName} {member.lastName}
+                  </CardTitle>
+                  <img
+                    src={member.imageUrl}  // Default image if no image provided
+                    alt={`${member.firstName} ${member.lastName}`}
+                    className="rounded-full w-24 h-24 mx-auto mb-4"
+                  />
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-md font-bold text-gray-900">{member.chapterRole}</p>
+                  <p className="text-sm font-bold text-blue-800">{member.stateRole}</p>
+                </CardContent>
+              </Card>
               ))}
             </div>
           )}

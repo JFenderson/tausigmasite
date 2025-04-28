@@ -12,14 +12,23 @@ import {
 import { Calendar, Users, Award, Heart } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "react-router-dom";
-import { fetchUpcomingEvents } from "../services/GoogleCalendarService";
+import {  fetchUpcomingEvents } from "../services/GoogleCalendarService";
+import { fetchGoogleSheetData } from "../services/GoogleSheetService";
+import axios from "axios";
+
 
 // const CLIENT_ID = '416426082232-31vh92aiq8959gdu909vmceg2je4u1i7.apps.googleusercontent.com';
-const API_KEY = process.env.API_KEY;
-const SPECIFIC_CALENDAR_ID = process.env.SPECIFIC_CALENDAR_ID ;
+const API_KEY = import.meta.env.VITE_API_KEY;
+const SPECIFIC_CALENDAR_ID = import.meta.env.VITE_SPECIFIC_CALENDAR_ID ;
+const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID;
+const RANGE = "Quotes!A1:D60";
+
 
 const Home = () => {
   const [events, setEvents] = useState<any[]>([]);
+  const [quotes, setQuotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Load the Google API scripts and fetch events
@@ -47,6 +56,37 @@ const Home = () => {
       });
     };
 
+    const getQuotes = async () => {
+      setLoading(true);
+      setError(null);  // Reset any previous errors
+
+      try {
+        // Fetch quotes from Google Sheet
+        const data = await fetchGoogleSheetData(SPREADSHEET_ID, RANGE, API_KEY);
+        console.log("Fetched Quotes Data:", data);
+
+        if (!data || data.length === 0) {
+          throw new Error("No data found in the sheet.");
+        }
+    
+        // Assuming quotes start from the second row, map the data
+        const mappedQuotes = data.slice(1).map((row: string[], index: number)  => ({
+          id: index + 1,
+          name: row[0],      // Name is in the first column
+          initiationDate: row[1],  // Initiation Date is in the second column
+          quote: row[2],     // Quote is in the third column
+        }));
+
+        setQuotes(mappedQuotes);  // Set the quotes to state
+      } catch (err) {
+        setError("Error fetching quotes from Google Sheets.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getQuotes();
     loadGapiScript();
   }, []);
 
@@ -182,35 +222,34 @@ const Home = () => {
 
           
         </section>
+          {/* Loading State */}
+          {loading && <p className="text-center text-gray-600">Loading testimonials...</p>}
 
-        {/* Testimonial Section */}
-        <section className="py-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-            What Our Brothers Say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardContent className="pt-6">
-                <p className="italic text-gray-600 mb-4">
-                  "Joining Tau Sigma was the best decision I made in college.
-                  The brotherhood and leadership opportunities have shaped me
-                  into who I am today."
-                </p>
-                <p className="font-semibold">John Doe, Class of 2020</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <p className="italic text-gray-600 mb-4">
-                  "The community service projects we organize have given me a
-                  new perspective on the importance of giving back. I'm proud to
-                  be a Tau Sigma brother."
-                </p>
-                <p className="font-semibold">Jane Smith, Class of 2022</p>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
+          {/* Error State */}
+          {error && <p className="text-center text-red-600">{error}</p>}
+
+              {/* No Quotes Found */}
+              {!loading && !error && quotes.length === 0 && (
+            <p className="text-center text-gray-600 mt-8">No testimonials found.</p>
+          )}
+
+    {/* Testimonial Section */}
+          <section className="py-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+              What Our Brothers Say
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {quotes.map((quote, index) => (
+                <Card key={index}>
+                  <CardContent className="pt-6">
+                    <p className="italic text-gray-600 mb-4">"{quote.quote}"</p>
+                    <p className="font-semibold">{quote.name}, Class of {quote.initiationDate}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
 
         {/* Call to Action Section */}
         <section className="py-12">

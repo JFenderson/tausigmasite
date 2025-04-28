@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-const CLIENT_ID = '416426082232-31vh92aiq8959gdu909vmceg2je4u1i7.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyBRWo6DTySVqQANVSuyw5b9O2aP5VAajg8';
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+const API_KEY = import.meta.env.VITE_CALENDAR_API_KEY;
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
 const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
@@ -120,7 +120,7 @@ const GoogleCalendar = () => {
   const listUpcomingEvents = async () => {
     try {
       const response = await window.gapi.client.calendar.events.list({
-        calendarId: '9c569e94d47ed3c539e4ab0adcf2db05f927c5a220316c93d3aca61dee9a4636@group.calendar.google.com',
+        calendarId: import.meta.env.VITE_SPECIFIC_CALENDAR_ID,
         timeMin: new Date().toISOString(),
         showDeleted: false,
         singleEvents: true,

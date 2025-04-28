@@ -4,11 +4,11 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star, Users, Heart, Award } from "lucide-react";
-import { fetchGoogleSheetData } from "@/services/GoogleCalendarService";
+import { fetchGoogleSheetData } from "@/services/GoogleSheetService";
 
-const SPREADSHEET_ID = process.env.SPREADSHEET_ID; // Replace with your Google Sheet ID
-const API_KEY = process.env.API_KEY; // Replace with your Google API key
-const RANGE = process.env.PI_KAPPA_CHAPTER_RANGE; // Replace with the range in your Google Sheet
+const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID; // Replace with your Google Sheet ID
+const API_KEY = import.meta.env.VITE_API_KEY; // Replace with your Google API key
+const RANGE = import.meta.env.VITE_PI_KAPPA_CHAPTER_RANGE; // Replace with the range in your Google Sheet
 
 interface Member {
   id: number;

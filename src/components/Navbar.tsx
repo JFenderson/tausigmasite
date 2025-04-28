@@ -39,13 +39,7 @@ const Navbar: React.FC = () => {
                     <Link to="/members" className="w-full">Members</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link to="/active-members" className="w-full">Active Members</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
                     <Link to="/become-a-member" className="w-full">Become a Member</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link to="/collegiate-chapter" className="w-full">Collegiate Chapter</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

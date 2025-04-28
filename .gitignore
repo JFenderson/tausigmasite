@@ -9,6 +9,9 @@ lerna-debug.log*
 
 .env
 
+tau-sigma-site-3ccb7-firebase-adminsdk-fbsvc-6629bf49b2.json
+GoogleSheetstoDynamoDB.cjs
+GoogleSheetsToFirestore.cjs
 
 node_modules
 dist
